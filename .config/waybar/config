@@ -92,7 +92,7 @@
 
     "network#speed": {
         "interval": 1,
-        "interface": "enp5s0",
+        "interface": "enp4s0",
         "format": " {bandwidthUpBits}  {bandwidthDownBits}",
     },
 

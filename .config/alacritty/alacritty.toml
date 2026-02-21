@@ -3,7 +3,7 @@
 TERM = "xterm-256color"
 
 [font]
-size = 9.5
+size = 10.5
 
 [font.bold]
 family = "JetBrainsMono NF"
@@ -19,7 +19,7 @@ style = "Italic"
 
 [font.normal]
 family = "JetBrainsMono NF"
-style = "Regular"
+style = "Normal"
 
 [font.offset]
 x = 0
@@ -51,3 +51,8 @@ import = [
 ]
 
 [terminal]
+
+[[keyboard.bindings]]
+key = "Return"
+mods = "Shift"
+chars = "\n"

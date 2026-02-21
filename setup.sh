@@ -6,7 +6,7 @@ sgdotfiles="$HOME/.sgdotfiles" #dot files location
 
 # #Installing Dependencies (arch only)
 # echo "Installing Dependencies"
-# sudo pacman -S i3-gaps rofi kdenlive alacritty ranger dunst neofetch zsh git polybar picom nitrogen arandr udisk2 thunar blueman flameshot
+# sudo pacman -S wofi alacritty dunst fastfetch zsh git waybar thunar blueman waybar zsh
 
 #Download Dots
 # echo "Downloading Dotfiles"
@@ -29,11 +29,3 @@ ln -sfn $sgdotfiles/.config/waybar ~/.config/
 mkdir -p $HOME/.config/eza
 nano $HOME/.config/eza/theme.yml
 ln -sfn $sgdotfiles/.config/eza-themes/themes/one_dark.yml ~/.config/eza/theme.yml
-
-# configs for i3
-# ln -sfn $HOME/.sgdotfiles/.config/i3 ~/.config
-# ln -sfn $HOME/.sgdotfiles/.config/nitrogen ~/.config
-# ln -sfn $HOME/.sgdotfiles/.config/picom ~/.config
-# ln -sfn $HOME/.sgdotfiles/.config/polybar ~/.config
-# ln -sfn $HOME/.sgdotfiles/.config/rofi ~/.config
-# ln -sfn $HOME/.sgdotfiles/.config/sddm ~/.config
