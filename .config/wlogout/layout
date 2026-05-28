@@ -1,36 +1,36 @@
 {
     "label" : "lock",
-    "action" : "/home/elon/.config/wlogout/custom_lock.sh",
-    "text" : "Lock (l)",
+    "action" : "bash -lc \"$HOME/.config/wlogout/custom_lock.sh\"",
+    "text" : "Lock",
     "keybind" : "l"
 }
 {
     "label" : "hibernate",
-    "action" : "systemctl hibernate",
-    "text" : "Hibernate (h)",
+    "action" : "$HOME/.config/wlogout/hibernate.sh",
+    "text" : "Hibernate",
     "keybind" : "h"
 }
 {
     "label" : "logout",
-    "action" : "loginctl terminate-user $USER",
-    "text" : "Logout (e)",
+    "action" : "swaymsg exit",
+    "text" : "Logout",
     "keybind" : "e"
 }
 {
     "label" : "shutdown",
     "action" : "systemctl poweroff",
-    "text" : "Shutdown (s)",
+    "text" : "Shutdown",
     "keybind" : "s"
 }
 {
     "label" : "suspend",
-    "action" : "systemctl suspend && /home/elon/.config/wlogout/custom_lock.sh",
-    "text" : "Suspend (u)",
+    "action" : "$HOME/.config/wlogout/suspend.sh",
+    "text" : "Suspend",
     "keybind" : "u"
 }
 {
     "label" : "reboot",
     "action" : "systemctl reboot",
-    "text" : "Reboot (r)",
+    "text" : "Reboot",
     "keybind" : "r"
 }

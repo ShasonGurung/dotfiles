@@ -1,9 +1,3 @@
-if [ "$(tty)" = "/dev/tty1" ] ; then
-    # Your environment variables
-    export QT_QPA_PLATFORM=wayland
-    export MOZ_ENABLE_WAYLAND=1
-    export MOZ_WEBRENDER=1
-    export XDG_SESSION_TYPE=wayland
-    export XDG_CURRENT_DESKTOP=sway
-    exec sway
+if [[ "$(uname -s)" == "Linux" ]] && [[ "${START_SWAY_FROM_TTY:-1}" == "1" ]] && [[ "$(tty)" == "/dev/tty1" ]] && [[ -x "$HOME/.config/sway/start-sway.sh" ]]; then
+    exec "$HOME/.config/sway/start-sway.sh"
 fi
