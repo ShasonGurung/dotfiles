@@ -15,11 +15,6 @@ if [[ -d "$HOME/Android/Sdk" ]]; then
   export PATH="$PATH:$ANDROID_HOME/emulator:$ANDROID_HOME/platform-tools"
 fi
 
-if [[ -d "$HOME/.dotnet" ]]; then
-  export DOTNET_ROOT="$HOME/.dotnet"
-  export PATH="$PATH:$DOTNET_ROOT:$DOTNET_ROOT/tools"
-fi
-
 export NVM_DIR="$HOME/.config/nvm"
 [[ -s "$NVM_DIR/nvm.sh" ]] && . "$NVM_DIR/nvm.sh"
 
