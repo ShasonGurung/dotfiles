@@ -5,8 +5,11 @@ sbar.add("event", workspace_event)
 
 local items = {}
 
-local function update_workspace(item, visible, selected)
-  item:set({ drawing = visible })
+local function update_workspace(item, visible, selected, display)
+  item:set({
+    drawing = visible,
+    display = display,
+  })
   sbar.animate("tanh", 12, function()
     item:set({
       label = { color = selected and colors.cyan or colors.muted },
@@ -31,26 +34,39 @@ for index = 1, 10 do
   items[workspace] = item
 end
 
-local function refresh(focused_hint)
-  sbar.exec("aerospace list-workspaces --monitor all --empty no", function(result)
-    local occupied = {}
-    for workspace in result:gmatch("[^%s]+") do
-      occupied[workspace] = true
-    end
+local workspace_format = "%{workspace}|%{monitor-appkit-nsscreen-screens-id}"
 
-    if focused_hint and focused_hint ~= "" then
-      for workspace, item in pairs(items) do
-        local visible = occupied[workspace] or workspace == focused_hint
-        update_workspace(item, visible, workspace == focused_hint)
-      end
-      return
+local function parse_workspaces(result)
+  local workspaces = {}
+  for line in result:gmatch("[^\r\n]+") do
+    local workspace, display = line:match("^([^|]+)|(%d+)$")
+    if workspace and display then
+      workspaces[workspace] = tonumber(display)
     end
+  end
+  return workspaces
+end
 
-    sbar.exec("aerospace list-workspaces --focused", function(focused_result)
-      local focused = focused_result:gsub("%s+", "")
+local function refresh()
+  local occupied_command = "aerospace list-workspaces --monitor all --empty no --format '" .. workspace_format .. "'"
+  sbar.exec(occupied_command, function(result)
+    local occupied = parse_workspaces(result)
+
+    local focused_command = "aerospace list-workspaces --focused --format '" .. workspace_format .. "'"
+    sbar.exec(focused_command, function(focused_result)
+      local focused_workspaces = parse_workspaces(focused_result)
+      local focused, focused_display = next(focused_workspaces)
+
       for workspace, item in pairs(items) do
-        local visible = occupied[workspace] or workspace == focused
-        update_workspace(item, visible, workspace == focused)
+        local display = occupied[workspace]
+        local selected = workspace == focused
+        local visible = display ~= nil or selected
+
+        if selected then
+          display = focused_display
+        end
+
+        update_workspace(item, visible, selected, display)
       end
     end)
   end)
@@ -67,7 +83,7 @@ observer:subscribe({ "routine", "forced" }, function()
 end)
 
 observer:subscribe(workspace_event, function(env)
-  refresh(env.FOCUSED_WORKSPACE)
+  refresh()
 end)
 
 refresh()

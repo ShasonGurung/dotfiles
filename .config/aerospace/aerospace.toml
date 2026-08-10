@@ -17,14 +17,30 @@ exec-on-workspace-change = [
 default-root-container-layout = 'tiles'
 default-root-container-orientation = 'auto'
 accordion-padding = 30
-persistent-workspaces = []
+persistent-workspaces = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
 
 gaps.inner.horizontal = 4
 gaps.inner.vertical = 4
 gaps.outer.left = 2
 gaps.outer.bottom = 2
-gaps.outer.top = 2
+# The macOS menu bar already reserves space on the laptop. External displays
+# need room for the 32px SketchyBar plus a small margin.
+gaps.outer.top = [{ monitor."built-in" = 2 }, 36]
 gaps.outer.right = 2
+
+# Keep workspaces 1-7 on an external display and 8-10 on the laptop. When
+# undocked, the built-in display is the fallback for 1-7 as well.
+[workspace-to-monitor-force-assignment]
+1 = ['^((?!built-in).)*$', 'built-in']
+2 = ['^((?!built-in).)*$', 'built-in']
+3 = ['^((?!built-in).)*$', 'built-in']
+4 = ['^((?!built-in).)*$', 'built-in']
+5 = ['^((?!built-in).)*$', 'built-in']
+6 = ['^((?!built-in).)*$', 'built-in']
+7 = ['^((?!built-in).)*$', 'built-in']
+8 = 'built-in'
+9 = 'built-in'
+10 = 'built-in'
 
 [mode.main.binding]
 # Applications
