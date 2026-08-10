@@ -1,0 +1,89 @@
+# Sway-inspired AeroSpace configuration for macOS.
+config-version = 2
+start-at-login = true
+auto-reload-config = true
+
+after-startup-command = [
+    'exec-and-forget borders',
+    'exec-and-forget sketchybar',
+]
+
+exec-on-workspace-change = [
+    '/bin/bash',
+    '-c',
+    'sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE',
+]
+
+default-root-container-layout = 'tiles'
+default-root-container-orientation = 'auto'
+accordion-padding = 30
+persistent-workspaces = []
+
+gaps.inner.horizontal = 4
+gaps.inner.vertical = 4
+gaps.outer.left = 2
+gaps.outer.bottom = 2
+gaps.outer.top = 2
+gaps.outer.right = 2
+
+[mode.main.binding]
+# Applications
+alt-enter = 'exec-and-forget open -na Alacritty'
+alt-d = 'exec-and-forget open -a Raycast'
+
+# Window management
+alt-shift-q = 'close'
+alt-shift-c = '''exec-and-forget aerospace reload-config && sketchybar --reload && "${HOME}/.config/borders/bordersrc"'''
+alt-left = 'focus left'
+alt-down = 'focus down'
+alt-up = 'focus up'
+alt-right = 'focus right'
+alt-shift-left = 'move left'
+alt-shift-down = 'move down'
+alt-shift-up = 'move up'
+alt-shift-right = 'move right'
+
+# Workspaces
+alt-1 = 'workspace 1'
+alt-2 = 'workspace 2'
+alt-3 = 'workspace 3'
+alt-4 = 'workspace 4'
+alt-5 = 'workspace 5'
+alt-6 = 'workspace 6'
+alt-7 = 'workspace 7'
+alt-8 = 'workspace 8'
+alt-9 = 'workspace 9'
+alt-0 = 'workspace 10'
+alt-shift-1 = 'move-node-to-workspace 1'
+alt-shift-2 = 'move-node-to-workspace 2'
+alt-shift-3 = 'move-node-to-workspace 3'
+alt-shift-4 = 'move-node-to-workspace 4'
+alt-shift-5 = 'move-node-to-workspace 5'
+alt-shift-6 = 'move-node-to-workspace 6'
+alt-shift-7 = 'move-node-to-workspace 7'
+alt-shift-8 = 'move-node-to-workspace 8'
+alt-shift-9 = 'move-node-to-workspace 9'
+alt-shift-0 = 'move-node-to-workspace 10'
+
+# Layouts; accordion corresponds to Sway's tabbed/stacked layouts.
+alt-b = 'layout tiles horizontal'
+alt-v = 'layout tiles vertical'
+alt-s = 'layout accordion vertical'
+alt-w = 'layout accordion horizontal'
+alt-e = 'layout tiles horizontal vertical'
+alt-f = 'fullscreen'
+alt-shift-space = 'layout floating tiling'
+alt-space = 'focus-back-and-forth || workspace-back-and-forth'
+alt-r = 'mode resize'
+
+# Multi-monitor workspace movement.
+alt-ctrl-right = 'move-workspace-to-monitor --wrap-around next'
+alt-ctrl-left = 'move-workspace-to-monitor --wrap-around prev'
+
+[mode.resize.binding]
+left = 'resize width -50'
+down = 'resize height +50'
+up = 'resize height -50'
+right = 'resize width +50'
+enter = 'mode main'
+esc = 'mode main'

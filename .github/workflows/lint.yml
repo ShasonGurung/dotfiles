@@ -15,4 +15,10 @@ jobs:
       - name: Check Bash syntax
         run: bash -n setup.sh
       - name: Run ShellCheck
-        run: shellcheck setup.sh
+        run: shellcheck setup.sh .config/borders/bordersrc
+      - name: Install Lua
+        run: sudo apt-get update && sudo apt-get install --yes lua5.4
+      - name: Check Lua syntax
+        run: |
+          find .config/sketchybar -name '*.lua' -print0 | xargs -0 luac5.4 -p
+          luac5.4 -p .config/sketchybar/sketchybarrc

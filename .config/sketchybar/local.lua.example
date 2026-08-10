@@ -1,0 +1,4 @@
+return {
+  -- Leave empty to let wttr.in infer an approximate location from the network.
+  weather_location = "London",
+}

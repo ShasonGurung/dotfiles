@@ -7,6 +7,8 @@ Personal dotfiles with a Wayland-first Linux setup and a smaller cross-platform 
 - `~/.zshenv` sets `XDG_CONFIG_HOME` and points `ZDOTDIR` at `.config/zsh`
 - `.config/zsh` contains the portable shell setup
 - `.config/alacritty`, `.config/fastfetch` are terminal tools
+- `.config/aerospace` provides Sway-inspired macOS tiling and keybindings
+- `.config/borders` and `.config/sketchybar` provide macOS borders and a Lua status bar
 - `.config/sway`, `.config/waybar`, `.config/wlogout`, `.config/wofi`, `.config/dunst` are Linux desktop configs
 - `.config/Wallpapers` contains local wallpaper assets and is optional
 
@@ -30,6 +32,9 @@ Only the shell and terminal pieces are expected to be useful as-is:
 - `.config/zsh`
 - `.config/alacritty`
 - `.config/fastfetch`
+- `.config/aerospace`
+- `.config/borders`
+- `.config/sketchybar`
 
 The Linux desktop configs are not meant to run on macOS.
 
@@ -40,7 +45,7 @@ The shell layer should work with minor adjustments, but the Wayland desktop piec
 ## Clone
 
 ```bash
-git clone --recurse-submodules https://github.com/Jivanam/dotfiles.git ~/.sgdotfiles
+git clone --recurse-submodules https://github.com/ShasonGurung/dotfiles.git ~/.sgdotfiles
 cd ~/.sgdotfiles
 git submodule update --init --recursive
 ```
@@ -99,6 +104,41 @@ Expected shell-side commands:
 - `fastfetch`
 - `eza`
 
+On macOS, the shell install also links an AeroSpace configuration. Install it
+with:
+
+```bash
+brew install --cask nikitabobko/tap/aerospace
+```
+
+Raycast is optional and provides the `Option+D` application launcher binding:
+
+```bash
+brew install --cask raycast
+```
+
+JankyBorders and SketchyBar provide focused-window borders and a Waybar-like
+status bar. JankyBorders follows the native macOS window radius to avoid mismatched
+square outer and rounded inner corners. The bar uses SbarLua:
+
+```bash
+brew tap FelixKratz/formulae
+brew install borders sketchybar lua
+git clone https://github.com/FelixKratz/SbarLua.git /tmp/SbarLua
+make -C /tmp/SbarLua install
+rm -rf /tmp/SbarLua
+```
+
+The bar includes occupied AeroSpace workspaces, focused application, media,
+compact CPU and memory usage, Wi-Fi status, weather, volume, battery, and clock
+modules, including upload/download throughput in bits per second. Media, weather,
+and clock items use SketchyBar's notch-aware left-side placement on MacBooks.
+Weather uses automatic network-based location detection by default. To select a
+location, copy `.config/sketchybar/local.lua.example` to
+`.config/sketchybar/local.lua`; the local file is ignored by Git.
+
+Use `Option+Shift+C` to reload AeroSpace, SketchyBar, and JankyBorders together.
+
 ### Linux desktop tools
 
 Expected desktop-side commands:
@@ -155,6 +195,9 @@ You can also force a scope:
 - `.config/alacritty` -> `~/.config/alacritty`
 - `.config/fastfetch` -> `~/.config/fastfetch`
 - `.config/eza-themes/one_dark.yml` -> `~/.config/eza/theme.yml`
+- `.config/aerospace` -> `~/.config/aerospace` (macOS only)
+- `.config/borders` -> `~/.config/borders` (macOS only)
+- `.config/sketchybar` -> `~/.config/sketchybar` (macOS only)
 
 ### Desktop
 

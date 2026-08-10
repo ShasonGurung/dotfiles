@@ -5,3 +5,4 @@
 .config/sway/local/outputs.env
 .config/sway/local/profiles/*.env
 .config/zsh/.zcompdump
+.config/sketchybar/local.lua

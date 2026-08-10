@@ -105,6 +105,13 @@ optional_commands_desktop=(
   azote
 )
 
+required_commands_macos=(
+  aerospace
+  borders
+  lua
+  sketchybar
+)
+
 detect_os() {
   case "$(uname -s)" in
     Linux) echo "linux" ;;
@@ -170,6 +177,11 @@ show_deps() {
       print_list "Suggested Homebrew packages:" "${shell_packages_common[@]}"
       echo
       printf 'Suggested install:\n  brew install %s\n' "${shell_packages_common[*]}"
+      echo
+      printf 'Suggested macOS window manager:\n  brew install --cask nikitabobko/tap/aerospace\n'
+      printf 'Optional application launcher:\n  brew install --cask raycast\n'
+      printf 'Suggested macOS appearance tools:\n  brew tap FelixKratz/formulae\n  brew install borders sketchybar lua\n'
+      printf 'SbarLua module:\n  git clone https://github.com/FelixKratz/SbarLua.git /tmp/SbarLua && make -C /tmp/SbarLua install\n'
       ;;
     *)
       printf 'Unsupported platform for dependency hints.\n'
@@ -204,6 +216,30 @@ check_commands() {
         missing=1
       fi
     done
+  fi
+
+  if [[ "$os_name" == "macos" ]] && [[ "$scope" == "shell" || "$scope" == "all" ]]; then
+    echo
+    printf 'macOS commands:\n'
+    for cmd in "${required_commands_macos[@]}"; do
+      if command -v "$cmd" >/dev/null 2>&1; then
+        printf '  ok   %s\n' "$cmd"
+      else
+        printf '  miss %s\n' "$cmd"
+        missing=1
+      fi
+    done
+    if [[ -d "/Applications/Raycast.app" ]]; then
+      printf '  ok   Raycast (optional)\n'
+    else
+      printf '  skip Raycast (optional; alt+d requires it)\n'
+    fi
+    if [[ -f "${target_home}/.local/share/sketchybar_lua/sketchybar.so" ]]; then
+      printf '  ok   SbarLua module\n'
+    else
+      printf '  miss SbarLua module\n'
+      missing=1
+    fi
   fi
 
   if [[ "$scope" == "desktop" || "$scope" == "all" ]]; then
@@ -285,11 +321,18 @@ show_status() {
   status_path "${repo_root}/.config/alacritty" "${target_config}/alacritty" || result=1
   status_path "${repo_root}/.config/fastfetch" "${target_config}/fastfetch" || result=1
   status_path "${repo_root}/.config/eza-themes/one_dark.yml" "${target_config}/eza/theme.yml" || result=1
-  status_path "${repo_root}/.config/dunst" "${target_config}/dunst" || result=1
-  status_path "${repo_root}/.config/sway" "${target_config}/sway" || result=1
-  status_path "${repo_root}/.config/waybar" "${target_config}/waybar" || result=1
-  status_path "${repo_root}/.config/wlogout" "${target_config}/wlogout" || result=1
-  status_path "${repo_root}/.config/wofi" "${target_config}/wofi" || result=1
+  if [[ "$(detect_os)" == "macos" ]]; then
+    status_path "${repo_root}/.config/aerospace" "${target_config}/aerospace" || result=1
+    status_path "${repo_root}/.config/borders" "${target_config}/borders" || result=1
+    status_path "${repo_root}/.config/sketchybar" "${target_config}/sketchybar" || result=1
+  fi
+  if [[ "$(detect_os)" == "linux" ]]; then
+    status_path "${repo_root}/.config/dunst" "${target_config}/dunst" || result=1
+    status_path "${repo_root}/.config/sway" "${target_config}/sway" || result=1
+    status_path "${repo_root}/.config/waybar" "${target_config}/waybar" || result=1
+    status_path "${repo_root}/.config/wlogout" "${target_config}/wlogout" || result=1
+    status_path "${repo_root}/.config/wofi" "${target_config}/wofi" || result=1
+  fi
   status_path "${repo_root}/.config/Wallpapers" "${target_config}/Wallpapers" || result=1
 
   return "$result"
@@ -302,9 +345,19 @@ install_shell() {
   link_path "${repo_root}/.config/alacritty" "${target_config}/alacritty"
   link_path "${repo_root}/.config/fastfetch" "${target_config}/fastfetch"
   link_path "${repo_root}/.config/eza-themes/one_dark.yml" "${target_config}/eza/theme.yml"
+  if [[ "$(detect_os)" == "macos" ]]; then
+    link_path "${repo_root}/.config/aerospace" "${target_config}/aerospace"
+    link_path "${repo_root}/.config/borders" "${target_config}/borders"
+    link_path "${repo_root}/.config/sketchybar" "${target_config}/sketchybar"
+  fi
 }
 
 install_desktop() {
+  if [[ "$(detect_os)" != "linux" ]]; then
+    printf 'desktop config is only supported on Linux\n' >&2
+    return 1
+  fi
+
   link_path "${repo_root}/.config/dunst" "${target_config}/dunst"
   link_path "${repo_root}/.config/sway" "${target_config}/sway"
   link_path "${repo_root}/.config/waybar" "${target_config}/waybar"
@@ -334,7 +387,9 @@ case "${mode}" in
     ;;
   all)
     install_shell
-    install_desktop
+    if [[ "$(detect_os)" == "linux" ]]; then
+      install_desktop
+    fi
     install_wallpapers
     ;;
   status)
