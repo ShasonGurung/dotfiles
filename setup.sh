@@ -5,8 +5,48 @@ set -euo pipefail
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 target_home="${HOME}"
 target_config="${target_home}/.config"
-mode="${1:-shell}"
-check_scope="${2:-auto}"
+mode="shell"
+check_scope="auto"
+dry_run=0
+
+usage() {
+  cat <<'EOF'
+usage: ./setup.sh [--dry-run] [shell|desktop|wallpapers|all|deps|check [auto|shell|desktop|all]|status]
+
+shell      install portable shell and terminal config (default)
+desktop    install Linux desktop config
+wallpapers install wallpaper assets
+all        install shell, desktop, and wallpapers
+deps       print platform-specific dependency hints
+check      verify required commands; auto checks shell on macOS, all on Linux
+status     show whether every managed path is linked correctly
+--dry-run  print filesystem changes without applying them
+EOF
+}
+
+while (($#)); do
+  case "$1" in
+    --dry-run) dry_run=1 ;;
+    shell|desktop|wallpapers|all|deps|status) mode="$1" ;;
+    check)
+      mode="check"
+      if (($# > 1)) && [[ "$2" =~ ^(auto|shell|desktop|all)$ ]]; then
+        check_scope="$2"
+        shift
+      fi
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      printf 'unknown argument: %s\n\n' "$1" >&2
+      usage >&2
+      exit 2
+      ;;
+  esac
+  shift
+done
 
 shell_packages_common=(
   zsh
@@ -195,10 +235,64 @@ check_commands() {
 link_path() {
   local source_path="$1"
   local target_path="$2"
+  local backup_path
 
-  mkdir -p "$(dirname "${target_path}")"
-  ln -sfn "${source_path}" "${target_path}"
-  printf 'linked %s -> %s\n' "${target_path}" "${source_path}"
+  if [[ -L "$target_path" ]] && [[ "$(readlink "$target_path")" == "$source_path" ]]; then
+    printf 'ok     %s -> %s\n' "$target_path" "$source_path"
+    return
+  fi
+
+  if [[ -e "$target_path" || -L "$target_path" ]]; then
+    backup_path="${target_path}.backup.$(date +%Y%m%d%H%M%S)"
+    if ((dry_run)); then
+      printf 'backup %s -> %s\n' "$target_path" "$backup_path"
+    else
+      mv "$target_path" "$backup_path"
+      printf 'backed up %s -> %s\n' "$target_path" "$backup_path"
+    fi
+  fi
+
+  if ((dry_run)); then
+    printf 'link   %s -> %s\n' "$target_path" "$source_path"
+  else
+    mkdir -p "$(dirname "$target_path")"
+    ln -s "$source_path" "$target_path"
+    printf 'linked %s -> %s\n' "$target_path" "$source_path"
+  fi
+}
+
+status_path() {
+  local source_path="$1"
+  local target_path="$2"
+
+  if [[ -L "$target_path" ]] && [[ "$(readlink "$target_path")" == "$source_path" ]]; then
+    printf 'ok       %s -> %s\n' "$target_path" "$source_path"
+  elif [[ -e "$target_path" || -L "$target_path" ]]; then
+    printf 'conflict %s (expected link to %s)\n' "$target_path" "$source_path"
+    return 1
+  else
+    printf 'missing  %s (expected link to %s)\n' "$target_path" "$source_path"
+    return 1
+  fi
+}
+
+show_status() {
+  local result=0
+
+  status_path "${repo_root}/.zshenv" "${target_home}/.zshenv" || result=1
+  status_path "${repo_root}/.gitconfig" "${target_home}/.gitconfig" || result=1
+  status_path "${repo_root}/.config/zsh" "${target_config}/zsh" || result=1
+  status_path "${repo_root}/.config/alacritty" "${target_config}/alacritty" || result=1
+  status_path "${repo_root}/.config/fastfetch" "${target_config}/fastfetch" || result=1
+  status_path "${repo_root}/.config/eza-themes/one_dark.yml" "${target_config}/eza/theme.yml" || result=1
+  status_path "${repo_root}/.config/dunst" "${target_config}/dunst" || result=1
+  status_path "${repo_root}/.config/sway" "${target_config}/sway" || result=1
+  status_path "${repo_root}/.config/waybar" "${target_config}/waybar" || result=1
+  status_path "${repo_root}/.config/wlogout" "${target_config}/wlogout" || result=1
+  status_path "${repo_root}/.config/wofi" "${target_config}/wofi" || result=1
+  status_path "${repo_root}/.config/Wallpapers" "${target_config}/Wallpapers" || result=1
+
+  return "$result"
 }
 
 install_shell() {
@@ -243,17 +337,11 @@ case "${mode}" in
     install_desktop
     install_wallpapers
     ;;
+  status)
+    show_status
+    ;;
   *)
-    cat <<'EOF'
-usage: ./setup.sh [shell|desktop|wallpapers|all|deps|check [auto|shell|desktop|all]]
-
-shell    install portable shell and terminal config
-desktop  install Linux desktop config
-wallpapers install wallpaper assets
-deps     print platform-specific dependency hints
-check    verify required commands; auto checks shell on macOS, all on Linux
-all      install shell, desktop, and wallpapers
-EOF
+    usage
     exit 1
     ;;
 esac

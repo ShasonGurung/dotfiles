@@ -1,6 +1,9 @@
-[user]
-    name = Jivanam
-    email = dev.s.gurung@outlook.com
+[include]
+    # Machine-specific identity belongs in this untracked file:
+    # [user]
+    #     name = Your Name
+    #     email = you@example.com
+    path = ~/.gitconfig.local
 [alias]
     
     co = checkout

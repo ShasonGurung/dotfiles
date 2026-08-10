@@ -68,9 +68,16 @@ Examples:
 ./setup.sh check shell
 ./setup.sh check desktop
 ./setup.sh all
+./setup.sh --dry-run all
+./setup.sh status
 ```
 
 By default, `./setup.sh` installs `shell`.
+
+Before replacing an existing managed path, the installer moves it to a
+timestamped `.backup.YYYYMMDDhhmmss` path. Use `--dry-run` to preview these
+changes. `status` reports `ok`, `missing`, or `conflict` for every managed path
+and exits non-zero unless all links are correct.
 
 ## Prerequisites
 
@@ -143,6 +150,7 @@ You can also force a scope:
 ### Shell
 
 - `.zshenv` -> `~/.zshenv`
+- `.gitconfig` -> `~/.gitconfig`
 - `.config/zsh` -> `~/.config/zsh`
 - `.config/alacritty` -> `~/.config/alacritty`
 - `.config/fastfetch` -> `~/.config/fastfetch`
@@ -159,6 +167,15 @@ You can also force a scope:
 ### Wallpapers
 
 - `.config/Wallpapers` -> `~/.config/Wallpapers`
+
+The tracked `.gitconfig` contains shared settings only. Put your identity in
+the untracked `~/.gitconfig.local`:
+
+```gitconfig
+[user]
+    name = Your Name
+    email = you@example.com
+```
 
 ## Update
 
