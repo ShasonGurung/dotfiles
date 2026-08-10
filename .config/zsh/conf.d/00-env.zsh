@@ -1,4 +1,13 @@
-export PATH="$PATH:$HOME/.local/bin"
+export PATH="$HOME/.local/bin:$PATH"
+
+# Homebrew
+if [[ "$OSTYPE" == darwin* ]]; then
+  if [[ -x /opt/homebrew/bin/brew ]]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+  elif [[ -x /usr/local/bin/brew ]]; then
+    eval "$(/usr/local/bin/brew shellenv)"
+  fi
+fi
 
 if [[ -d "$HOME/Android/Sdk" ]]; then
   export ANDROID_SDK_HOME="$HOME/.config"
@@ -22,3 +31,4 @@ fi
 if command -v pyenv >/dev/null 2>&1; then
   eval "$(pyenv init - zsh)"
 fi
+

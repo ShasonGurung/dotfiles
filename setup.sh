@@ -203,6 +203,7 @@ link_path() {
 
 install_shell() {
   link_path "${repo_root}/.zshenv" "${target_home}/.zshenv"
+  link_path "${repo_root}/.gitconfig" "${target_home}/.gitconfig"
   link_path "${repo_root}/.config/zsh" "${target_config}/zsh"
   link_path "${repo_root}/.config/alacritty" "${target_config}/alacritty"
   link_path "${repo_root}/.config/fastfetch" "${target_config}/fastfetch"
