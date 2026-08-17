@@ -46,3 +46,4 @@ require("items.battery")
 require("items.clock")
 
 sbar.exec("sketchybar --update")
+sbar.exec("pkill -x sketchybar-toggle; sketchybar-toggle &")
